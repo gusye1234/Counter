@@ -2,4 +2,6 @@ Counter
 ===========
 
 To start the game, run:
-    $ python3 counter.py
+```python
+python3 counter.py
+```
