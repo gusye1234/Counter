@@ -1,11 +1,8 @@
+import tkinter as tk
 from tkinter import Frame, Label, CENTER
-import random
 
 import constants as c
 
-
-def gen():
-    return random.randint(0, c.GRID_LEN - 1)
 
 
 def new_game(n, m):
@@ -20,9 +17,10 @@ def new_game(n, m):
 
 class GameGrid(Frame):
     def __init__(self):
-        Frame.__init__(self)
+        Frame.__init__(self, bg=c.BACKGROUND_COLOR_GAME,
+                       width=c.SIZE_WIDTH, height=c.SIZE_HEIGHT + (c.SIZE_HEIGHT // c.GRID_HEIGHT))
 
-        self.grid()
+        # self.grid()
         self.master.title('Counter')
         self.master.bind("<Key>", self.key_down)
 
@@ -31,15 +29,16 @@ class GameGrid(Frame):
                          c.KEY_UP_ALT: self.up, c.KEY_DOWN_ALT: self.down,
                          c.KEY_LEFT_ALT: self.left, c.KEY_RIGHT_ALT: self.right,
                          c.KEY_H: self.left, c.KEY_L: self.right,
-                         c.KEY_K: self.up, c.KEY_J: self.down}
-
+                         c.KEY_K: self.up, c.KEY_J: self.down,
+                         "Up": self.up, "Down": self.down,
+                         "Left": self.left, "Right": self.right}
+        self.pack(fill="both", expand=True)
         self.grid_cells = []
         self.init_grid()
         self.look_at = [0, 0]
         self.matrix = new_game(c.GRID_HEIGHT, c.GRID_WIDTH)
         self.history_matrixs = []
         self.update_grid_cells()
-        self.pack(fill="both", expand=True)
         self.mainloop()
 
     def up(self):
@@ -73,51 +72,58 @@ class GameGrid(Frame):
             return False
         return False
 
-    def init_grid(self):
-        self.grid()
-        background = Frame(self, bg=c.BACKGROUND_COLOR_GAME,)
-                        #    width=c.SIZE_WIDTH, height=c.SIZE_HEIGHT + (c.SIZE_HEIGHT // c.GRID_HEIGHT))
-        background.grid(row=0, column=0)
+    def get_bg(self, i, j):
+        return c.Board_Degree[i//3]
 
+
+    def init_grid(self):
+        # background = self
+        background = Frame(self, bg=c.BACKGROUND_COLOR_GAME,
+                           width=c.SIZE_WIDTH, height=c.SIZE_HEIGHT + (c.SIZE_HEIGHT // c.GRID_HEIGHT))
+        background.grid(row=0, column=0, sticky="NSEW")
         for i in range(c.GRID_WIDTH):
-            cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                            #  width=2,
-                            #  height=2)
-                            width=c.SIZE_WIDTH / c.GRID_WIDTH,
-                            height=c.SIZE_HEIGHT / c.GRID_HEIGHT)
-            cell.grid(row=0, column=i, padx=c.GRID_PADDING,
-                          pady=c.GRID_PADDING)
-            t = Label(master=cell,
+            # cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+            #                 #  width=2,
+            #                 #  height=2)
+            #                 width=c.SIZE_WIDTH // c.GRID_WIDTH,
+            #                 height=c.SIZE_HEIGHT // c.GRID_HEIGHT)
+            # cell.grid(row=0, column=i, padx=c.GRID_PADDING,
+            #               pady=c.GRID_PADDING)
+            t = Label(master=background,
                       text=c.Numbers_chinese[i] ,
-                      bg=c.BACKGROUND_COLOR_DICT[8],
+                      bg="#34495E",
                       fg=c.CELL_COLOR_DICT[8],
                       justify=CENTER,
                       font=c.FONT,
                       width=3,
-                      height=1)
-            t.grid()
+                      height=1,)
+            t.grid(row=0, column=i, padx=c.GRID_PADDING,
+                   pady=c.GRID_PADDING, sticky="NSEW")
 
         for i in range(c.GRID_HEIGHT):
             grid_row = []
             for j in range(c.GRID_WIDTH):
-                cell = Frame(
-                    background,
-                    bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                    #  width=2,
-                    #  height=2)
-                    width=c.SIZE_WIDTH / c.GRID_WIDTH,
-                    height=c.SIZE_HEIGHT / c.GRID_HEIGHT)
-                cell.grid(row=i+1, column=j, padx=c.GRID_PADDING,
-                          pady=c.GRID_PADDING)
-                t = Label(master=cell, text="",
+                # cell = Frame(
+                #     background,
+                #     bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                #     width=c.SIZE_WIDTH // c.GRID_WIDTH,
+                #     height=c.SIZE_HEIGHT // c.GRID_HEIGHT)
+                # cell.grid(row=i+1, column=j, padx=c.GRID_PADDING,
+                #           pady=c.GRID_PADDING)
+                t = Label(master=background, text="",
                         bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                        justify=CENTER, font=c.FONT, width=3, height=1)
-                t.grid()
+                        justify=CENTER, font=c.FONT, width=3, height=1,)
+                t.grid(row=i+1, column=j, padx=c.GRID_PADDING,
+                       pady=c.GRID_PADDING, sticky="NSEW")
                 grid_row.append(t)
 
             self.grid_cells.append(grid_row)
-        background2 = Frame(self, bg="#000000",)
-                        #    width=c.SIZE_WIDTH, height=c.SIZE_HEIGHT + (c.SIZE_HEIGHT // c.GRID_HEIGHT))
+        for i in range(c.GRID_HEIGHT + 1):
+            background.grid_rowconfigure(i, weight=1)
+        for j in range(c.GRID_WIDTH):
+            background.grid_columnconfigure(j, weight=1)
+        background2 = Frame(self, bg="#34495E",
+                           width=c.SIZE_WIDTH, height=c.SIZE_HEIGHT // c.GRID_HEIGHT)
         background2.grid(row=1, column=0)
         t = Label(master=background2,
                   text="退出按‘q’或者返回键")
@@ -136,11 +142,12 @@ class GameGrid(Frame):
                         self.grid_cells[i][j].configure(text="...", bg=c.BACKGROUND_COLOR_DICT[2],
                                                     fg=c.CELL_COLOR_DICT[2])
                 else:
+                    bg = self.get_bg(i, j)
                     if new_number >= 0:
-                        self.grid_cells[i][j].configure(text=str(new_number), bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                        self.grid_cells[i][j].configure(text=str(new_number), bg=bg,
                                                         fg=FONT_color)
                     else:
-                        self.grid_cells[i][j].configure(text="", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
+                        self.grid_cells[i][j].configure(text="", bg=bg)
                 # if new_number == 0:
                 #     self.grid_cells[i][j].configure(text="", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
                 # else:
@@ -150,6 +157,8 @@ class GameGrid(Frame):
 
     def key_down(self, event):
         key = repr(event.char)
+        if key == "\'\'":
+            key = event.keysym
         if key in c.EXITS:
             exit(0)
         # if key == c.KEY_BACK and len(self.history_matrixs) > 1:
@@ -162,7 +171,7 @@ class GameGrid(Frame):
             if new_one:
                 self.new_line()
         elif key in self.commands:
-            self.commands[repr(event.char)]()
+            self.commands[key]()
         elif key == c.DELETE:
             self.matrix[self.look_at[0]][self.look_at[1]] = -1
             self.left()

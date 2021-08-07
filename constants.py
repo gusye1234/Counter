@@ -1,20 +1,24 @@
-SIZE_WIDTH = 10
-SIZE_HEIGHT = 150
+SIZE_WIDTH = 30
+SIZE_HEIGHT = 30
 GRID_LEN = 10
 
 GRID_WIDTH = 10
-GRID_HEIGHT = 10
-GRID_PADDING = 2
+GRID_HEIGHT = 15
+GRID_PADDING = 1
 
 EXITS = ["\'q\'", "\'\\x1b\'"]
 DELETE = "\'\\x7f\'"
-BLUE = "#8FBC8F"
+BLUE = "#145A32"
 RED = "#8B0000"
 
 CURSOR_COLOR = "#eee4da"
 
 BACKGROUND_COLOR_GAME = "#F4F6F6"
 BACKGROUND_COLOR_CELL_EMPTY = "#EAECEE"
+
+Board_Degree = [
+    "#F2F3F4", "#EAECEE", "#D7DBDD", "#CACFD2", "#BDC3C7", "#4D5656"
+]
 
 BACKGROUND_COLOR_DICT = {2: "#eee4da", 4: "#ede0c8", 8: "#f2b179",
                          16: "#f59563", 32: "#f67c5f", 64: "#f65e3b",
@@ -36,7 +40,7 @@ Numbers_chinese = [
     "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"
 ]
 
-FONT = ("Verdana", 40, "bold")
+FONT = ("Verdana", 20, "bold")
 
 KEY_UP_ALT = "\'\\uf700\'"
 KEY_DOWN_ALT = "\'\\uf701\'"
